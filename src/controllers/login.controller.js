@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 import connection from "../db/database.js";
 
 const TABLE_USERS = "users";
@@ -21,6 +23,12 @@ async function RegisterNewUser(req, res) {
     console.log(error);
     res.sendStatus(500);
   }
+
+  //register new user
+  await connection.query(
+    `INSERT INTO ${TABLE_USERS} (name, email, "passwordHash") VALUES ($1, $2, $3);`,
+    [name, email, bcrypt.hashSync(password, 10)]
+  );
 
   res.sendStatus(201);
 }
