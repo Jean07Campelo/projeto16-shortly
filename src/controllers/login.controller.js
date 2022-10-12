@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import dayjs from "dayjs";
 
 import connection from "../db/database.js";
 
@@ -25,9 +26,13 @@ async function RegisterNewUser(req, res) {
   }
 
   //register new user
+  const dateNow = dayjs(Date.now()).locale("pt").format("YYYY-MM-DD HH:mm");
+
   await connection.query(
-    `INSERT INTO ${TABLE_USERS} (name, email, "passwordHash") VALUES ($1, $2, $3);`,
-    [name, email, bcrypt.hashSync(password, 10)]
+    `INSERT INTO ${TABLE_USERS} 
+    (name, email, "passwordHash", "createdAt") 
+    VALUES ($1, $2, $3, $4);`,
+    [name, email, bcrypt.hashSync(password, 10), dateNow]
   );
 
   res.sendStatus(201);
