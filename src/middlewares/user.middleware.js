@@ -1,4 +1,4 @@
-import newUserSchema from "../schemas/newUser.js";
+import newUserSchema from "../schemas/newUser.schema.js";
 
 function validateUser(req, res, next) {
   const validationNewUser = newUserSchema.validate(req.body, {
