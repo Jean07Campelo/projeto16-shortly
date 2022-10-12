@@ -5,7 +5,7 @@ import connection from "../db/database.js";
 
 const TABLE_USERS = "users";
 
-async function RegisterNewUser(req, res) {
+async function registerNewUser(req, res) {
   const { name, email, password, confirmPassword } = req.body;
 
   //validate if user is registered
@@ -38,4 +38,30 @@ async function RegisterNewUser(req, res) {
   res.sendStatus(201);
 }
 
-export { RegisterNewUser };
+async function accessAccount(req, res) {
+  const { email, password } = req.body;
+
+  //validates if user is registered
+  const userRegistered = await connection.query(
+    `SELECT * FROM ${TABLE_USERS} WHERE email = $1;`,
+    [email]
+  );
+
+  if (userRegistered.rows.length === 0) {
+    return res.status(401).send("User not registered");
+  }
+
+  //validates if the password is compatible
+  const passwordIsValid = bcrypt.compareSync(
+    password,
+    userRegistered.rows[0].passwordHash
+  );
+
+  if (!passwordIsValid) {
+    return res.status(401).send("Please confirm the password");
+  }
+
+  res.sendStatus(200);
+}
+
+export { registerNewUser, accessAccount };
