@@ -5,3 +5,10 @@ CREATE TABLE users (
     "passwordHash" TEXT UNIQUE NOT NULL,
     "createdAt" TEXT NOT NULL
 );
+
+CREATE TABLE sessions (
+    id SERIAL PRIMARY KEY,
+    "userId" INTEGER REFERENCES "users"("id"),
+    token VARCHAR(100) NOT NULL,
+    "createdAt" VARCHAR(20) NOT NULL
+);

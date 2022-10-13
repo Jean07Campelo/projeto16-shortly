@@ -1,9 +1,12 @@
 import bcrypt from "bcrypt";
 import dayjs from "dayjs";
+import { v4 as uuid } from "uuid";
 
 import connection from "../db/database.js";
+import { gerateDate } from "../gerateDate.js";
 
 const TABLE_USERS = "users";
+const TABLE_SESSIONS = "sessions";
 
 async function registerNewUser(req, res) {
   const { name, email, password, confirmPassword } = req.body;
@@ -26,7 +29,7 @@ async function registerNewUser(req, res) {
   }
 
   //register new user
-  const dateNow = dayjs(Date.now()).locale("pt").format("YYYY-MM-DD HH:mm");
+  const dateNow = gerateDate();
 
   await connection.query(
     `INSERT INTO ${TABLE_USERS} 
@@ -50,6 +53,7 @@ async function accessAccount(req, res) {
   if (userRegistered.rows.length === 0) {
     return res.status(401).send("User not registered");
   }
+  const userId = userRegistered.rows[0].id;
 
   //validates if the password is compatible
   const passwordIsValid = bcrypt.compareSync(
@@ -61,7 +65,16 @@ async function accessAccount(req, res) {
     return res.status(401).send("Please confirm the password");
   }
 
-  res.sendStatus(200);
+  const token = uuid();
+  const dateNow = gerateDate();
+
+  await connection.query(
+    `INSERT INTO ${TABLE_SESSIONS} ("userId", token, "createdAt") 
+  VALUES ($1, $2, $3);`,
+    [userId, token, dateNow]
+  );
+
+  res.status(200).send({ token });
 }
 
 export { registerNewUser, accessAccount };
