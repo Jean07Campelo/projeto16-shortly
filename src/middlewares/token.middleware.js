@@ -17,7 +17,6 @@ async function validateToken(req, res, next) {
     );
 
     if (!tokenIsValid.rows[0]) {
-      console.log("TOKEN INVÁLIDO");
       return res.status(404).send("Token invalid");
     }
 
