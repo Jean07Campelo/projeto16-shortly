@@ -16,13 +16,14 @@ async function generateShortUrl(req, res) {
 
   const shortUrl = nanoid();
   const timeNow = generateDate();
+  const valueInitial = 0;
 
   try {
     const shortUrlSuccessful = await connection.query(
       `INSERT INTO ${TABLE_URLS} 
-        ("userId", url, "shortUrl", "createdAt") 
-        VALUES ($1, $2, $3, $4);`,
-      [userId, url, shortUrl, timeNow]
+        ("userId", url, "shortUrl", visits, "createdAt") 
+        VALUES ($1, $2, $3, $4, $5);`,
+      [userId, url, shortUrl, valueInitial, timeNow]
     );
 
     if (shortUrlSuccessful.rowCount === 1) {

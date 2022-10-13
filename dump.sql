@@ -18,5 +18,6 @@ CREATE TABLE urls (
     "userId" INTEGER REFERENCES "users"("id"),
     url TEXT UNIQUE NOT NULL,
     "shortUrl" TEXT UNIQUE NOT NULL,
+    visits INTEGER DEFAULT 0,
     "createdAt" VARCHAR(20) NOT NULL
 );
