@@ -16,6 +16,13 @@ async function accessShortUrl(req, res) {
     }
 
     const { url } = shortUrlRegistered.rows[0];
+    const { visits } = shortUrlRegistered.rows[0];
+
+    //update number visits
+    await connection.query(
+      `UPDATE ${TABLE_URLS} SET visits = $1 WHERE "shortUrl" = $2;`,
+      [visits + 1, shortUrl]
+    );
 
     return res.redirect(200, url);
   } catch (error) {
