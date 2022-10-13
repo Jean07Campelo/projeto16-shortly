@@ -1,9 +1,8 @@
 import bcrypt from "bcrypt";
-import dayjs from "dayjs";
 import { v4 as uuid } from "uuid";
 
 import connection from "../db/database.js";
-import { gerateDate } from "../gerateDate.js";
+import { generateDate } from "../generateDate.js";
 
 const TABLE_USERS = "users";
 const TABLE_SESSIONS = "sessions";
@@ -29,7 +28,7 @@ async function registerNewUser(req, res) {
   }
 
   //register new user
-  const dateNow = gerateDate();
+  const dateNow = generateDate();
 
   await connection.query(
     `INSERT INTO ${TABLE_USERS} 
@@ -66,7 +65,7 @@ async function accessAccount(req, res) {
   }
 
   const token = uuid();
-  const dateNow = gerateDate();
+  const dateNow = generateDate();
 
   await connection.query(
     `INSERT INTO ${TABLE_SESSIONS} ("userId", token, "createdAt") 
