@@ -20,12 +20,15 @@ async function validateToken(req, res, next) {
       console.log("TOKEN INVÁLIDO");
       return res.status(404).send("Token invalid");
     }
+
+    res.locals.userId = tokenIsValid.rows[0].userId;
+
   } catch (error) {
     console.log(error);
     return res.status(500).send(error);
   }
 
-  res.locals.token = token;
+  
   next();
 }
 
