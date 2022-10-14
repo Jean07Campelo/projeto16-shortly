@@ -43,37 +43,42 @@ async function registerNewUser(req, res) {
 async function accessAccount(req, res) {
   const { email, password } = req.body;
 
-  //validates if user is registered
-  const userRegistered = await connection.query(
-    `SELECT * FROM ${TABLE_USERS} WHERE email = $1;`,
-    [email]
-  );
+  try {
+    //validates if user is registered
+    const userRegistered = await connection.query(
+      `SELECT * FROM ${TABLE_USERS} WHERE email = $1;`,
+      [email]
+    );
 
-  if (userRegistered.rows.length === 0) {
-    return res.status(401).send("User not registered");
-  }
-  const userId = userRegistered.rows[0].id;
+    if (userRegistered.rows.length === 0) {
+      return res.status(401).send("User not registered");
+    }
+    const userId = userRegistered.rows[0].id;
 
-  //validates if the password is compatible
-  const passwordIsValid = bcrypt.compareSync(
-    password,
-    userRegistered.rows[0].passwordHash
-  );
+    //validates if the password is compatible
+    const passwordIsValid = bcrypt.compareSync(
+      password,
+      userRegistered.rows[0].passwordHash
+    );
 
-  if (!passwordIsValid) {
-    return res.status(401).send("Please confirm the password");
-  }
+    if (!passwordIsValid) {
+      return res.status(401).send("Please confirm the password");
+    }
 
-  const token = uuid();
-  const dateNow = generateDate();
+    const token = uuid();
+    const dateNow = generateDate();
 
-  await connection.query(
-    `INSERT INTO ${TABLE_SESSIONS} ("userId", token, "createdAt") 
+    await connection.query(
+      `INSERT INTO ${TABLE_SESSIONS} ("userId", token, "createdAt") 
   VALUES ($1, $2, $3);`,
-    [userId, token, dateNow]
-  );
+      [userId, token, dateNow]
+    );
 
-  res.status(200).send({ token });
+    return res.status(200).send({ token });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error.detail);
+  }
 }
 
 export { registerNewUser, accessAccount };
