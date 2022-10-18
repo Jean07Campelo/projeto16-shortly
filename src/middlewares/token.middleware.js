@@ -8,7 +8,7 @@ async function validateToken(req, res, next) {
   if (!token) {
     return res.status(401).send("Token invalid");
   }
-  token = token.replace("Bearer Token ", "");
+  token = token.replace("Bearer ", "");
 
   try {
     const tokenIsValid = await connection.query(
